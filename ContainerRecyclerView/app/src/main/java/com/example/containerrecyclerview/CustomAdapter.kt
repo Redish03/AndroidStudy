@@ -10,13 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.containerrecyclerview.databinding.ItemRecyclerBinding
 import java.text.SimpleDateFormat
 
-class CustomAdapter: ListAdapter<Memo, Holder>(diffUtil) {
-    private lateinit var itemClickListener: OnItemClickListener
-    interface OnItemClickListener{
-        fun OnClick(v: View, position: Int)
-    }
+class CustomAdapter : ListAdapter<Memo, Holder>(diffUtil) {
+    //    5트, 람다식 적용, interface 삭제
+//    private lateinit var itemClickListener: OnItemClickListener
+//    interface OnItemClickListener{
+//        fun OnClick(v: View, position: Int)
+//    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val binding = ItemRecyclerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemRecyclerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         return Holder(binding)
     }
@@ -26,15 +28,15 @@ class CustomAdapter: ListAdapter<Memo, Holder>(diffUtil) {
 //    }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.itemView.setOnClickListener{
-            itemClickListener.OnClick(it, position)
-        }
+//        holder.itemView.setOnClickListener{
+//            itemClickListener.OnClick(it, position)
+//        }
         holder.setMemo(getItem(position))
     }
 
-    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
-        this.itemClickListener = onItemClickListener
-    }
+//    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+//        this.itemClickListener = onItemClickListener
+//    }
 
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<Memo>() {
@@ -48,13 +50,40 @@ class CustomAdapter: ListAdapter<Memo, Holder>(diffUtil) {
         }
     }
 }
-class Holder(val binding: ItemRecyclerBinding): RecyclerView.ViewHolder(binding.root) {
+
+class CustomAdapter2(memos: List<Memo> = listOf()) : RecyclerView.Adapter<Holder>() {
+    //    방어적 복사
+    private val _memos = memos.toMutableList()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+        val binding =
+            ItemRecyclerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return Holder(binding)
+    }
+
+    override fun onBindViewHolder(holder: Holder, position: Int) {
+        holder.setMemo(_memos[position])
+    }
+
+    override fun getItemCount(): Int = _memos.size
+
+    fun submitList(memos: List<Memo>) {
+        _memos.clear()
+        _memos.addAll(memos)
+        notifyDataSetChanged()
+    }
+}
+
+class Holder(val binding: ItemRecyclerBinding) : RecyclerView.ViewHolder(binding.root) {
     fun setMemo(memo: Memo) {
         binding.textNo.text = "${memo.no}"
         binding.textTitle.text = memo.title
-
-        var sdf = SimpleDateFormat("yyyy/MM/dd")
-        var formattedDate = sdf.format(memo.timeStamp)
+//        #5트
+//        item의 Constraint layout을 클릭했을 때, MainActivity에서 지정한 onMemoClick을 실행
+        binding.lyitem.setOnClickListener {
+            memo.onMemoClick(adapterPosition)
+        }
+        val sdf = SimpleDateFormat("yyyy/MM/dd")
+        val formattedDate = sdf.format(memo.timeStamp)
         binding.textDate.text = formattedDate
     }
 }
