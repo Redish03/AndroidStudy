@@ -12,8 +12,8 @@ import com.example.containerrecyclerview.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val customAdapter: CustomAdapter2 by lazy {
-        CustomAdapter2()
+    private val customAdapter: CustomAdapter by lazy {
+        CustomAdapter()
     }
     private var itemList = mutableListOf<Memo>()
 
@@ -69,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         val number = itemList.count() + 1
         val title = "이것이 안드로이드다 ${itemList.count() + 1}"
         val date = System.currentTimeMillis()
-
 //        lambda 적용
         return Memo(number, title, date, ::updatePosition)
     }
